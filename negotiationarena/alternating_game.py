@@ -289,7 +289,7 @@ class AlternatingGameEndsOnTag(AlternatingGame):
     """
 
     def __init__(
-        self, players: List[List], log_dir=".logs", log_path=None, iterations=8, *args, **kwargs
+        self, players: List[List], log_dir=".logs", log_path=None, iterations=8, *args, **kwargs # added args and kwargs for debugging
     ):
         super().__init__(
             players=players,
