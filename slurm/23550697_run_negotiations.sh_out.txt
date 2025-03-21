@@ -1,0 +1,5 @@
+buyer persona: syncophant | seller persona: syncophant
+buyer persona: syncophant | seller persona: nonsyncophant
+buyer persona: nonsyncophant | seller persona: syncophant
+buyer persona: nonsyncophant | seller persona: nonsyncophant
+Done!

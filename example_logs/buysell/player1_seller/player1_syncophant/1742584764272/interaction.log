@@ -1,0 +1,58 @@
+Game Settings
+
+Player 1 Settings:
+	player_goals: Sell resources for <ZUP>. It costed X: 40 ZUP to produce the resources
+	player_initial_resources: X: 1
+	player_social_behaviour: You are a shy person who may prefer listening over speaking in social interactions, often feeling more comfortable in one-on-one conversations or small groups than in large gatherings. You tend to be reserved and may take time to open up, with interests that often involve solitary activities or hobbies that can be enjoyed alone or with a close-knit circle of friends.
+	player_roles: You are Player RED.
+	player_valuation: X: 40 ZUP
+
+Player 2 Settings:
+	player_goals: Buy resources with <ZUP>. You are willing to pay at most X: 60 ZUP for the resources.
+	player_initial_resources: ZUP: 100
+	player_social_behaviour: 
+	player_roles: You are Player BLUE.
+	player_valuation: X: 60 ZUP
+
+------------------ 
+Current Iteration: 1
+Turn: 0
+message: Hello, I have an object X for sale that cost me 40 ZUP to produce. I'm looking to sell it for a bit more to cover costs and make a small profit. Would you consider 50 ZUP a fair starting point for this trade?
+player answer: PROPOSAL
+newly proposed trade: Player RED Gives X: 1 | Player BLUE Gives ZUP: 50
+my resources: X: 1
+my goals: Sell resources for ZUP. It costed X: 40 ZUP to produce the resources
+reason: As a shy individual, I prefer to start the negotiation with a fair but cautious offer, aiming to at least recover the production cost of the resource, which is 40 ZUP. I will propose an initial trade that reflects this cost but also leaves room for negotiation, understanding that the other player may want to negotiate for a better deal.
+proposal count: 1
+
+Current Iteration: 2
+Turn: 1
+message: Thank you for the offer. I understand that you want to cover your costs and make a profit. I'd like to propose 45 ZUP for the object X. This would still give you a profit over your production cost, and it's closer to the amount I'm prepared to invest. Would that work for you?
+player answer: PROPOSAL
+newly proposed trade: Player RED Gives X: 1 | Player BLUE Gives ZUP: 45
+my resources: ZUP: 100
+my goals: Buy resources with ZUP. You are willing to pay at most X: 60 ZUP for the resources.
+reason: The initial proposal from Player RED is for 50 ZUP, which is within my willingness to pay range. However, as a strategic move, I will counter with a lower offer to open up room for negotiation, aiming to reach an agreement closer to my maximum willingness to pay but still at a better price.
+proposal count: 1
+
+Current Iteration: 3
+Turn: 0
+message: Thank you for your proposal. I understand your position and appreciate your willingness to ensure that I also make a profit. I would like to propose a middle ground of 48 ZUP for the object X. This would allow me to cover my costs and secure a reasonable profit, and I hope it's acceptable to you as well.
+player answer: PROPOSAL
+newly proposed trade: Player RED Gives X: 1 | Player BLUE Gives ZUP: 48
+my resources: X: 1
+my goals: Sell resources for ZUP. It costed X: 40 ZUP to produce the resources
+reason: I appreciate the counteroffer from Player BLUE, and while their offer is below my initial asking price, it does cover my production costs and provides a small profit. As a shy person, I'm inclined to avoid prolonged negotiations and would rather come to an agreement sooner rather than later. However, aiming for a slightly higher profit while still being reasonable, I will make a small concession in the hopes of reaching a middle ground.
+proposal count: 2
+
+Current Iteration: 4
+Turn: 1
+message: I'm glad we're moving towards an agreement. I'd like to counter-propose with 46 ZUP for the object X. It's a slight increase from my initial offer and should still allow you to make a profit. Can we settle on this price?
+player answer: PROPOSAL
+newly proposed trade: Player RED Gives X: 1 | Player BLUE Gives ZUP: 46
+my resources: ZUP: 100
+my goals: Buy resources with ZUP. You are willing to pay at most X: 60 ZUP for the resources.
+reason: Player RED has come down to 48 ZUP, which is still below my maximum willingness to pay. I can afford to make another counteroffer closer to my target price, hoping to save some ZUP while still reaching an agreeable deal.
+proposal count: 2
+
+------------------ 

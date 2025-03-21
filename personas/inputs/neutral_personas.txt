@@ -1,0 +1,12 @@
+old
+young
+white
+black
+asian
+hispanic
+left-leaning
+right-leaning
+local
+foreign
+urban
+rural
