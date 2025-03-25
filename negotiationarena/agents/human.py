@@ -48,16 +48,30 @@ class HumanAgent(Agent):
         return result
 
     def chat(self):
-        to_receive = input("What do you want to reveive from the assistant? ")
-        to_pay = input("What do you want to pay to the assistant? ")
-        custom_message = input("What message do you want to send to the assistant? ")
-        message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"
-        message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
-        message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
-        message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"
-        message += f"<{PLAYER_ANSWER_TAG}> PROPOSAL </{PLAYER_ANSWER_TAG}>\n"
-        message += f"<{PROPOSED_TRADE_TAG}> {AGENT_ONE} Gives X: {to_receive} | {AGENT_TWO} Gives {MONEY_TOKEN}: {to_pay} </{PROPOSED_TRADE_TAG}>\n"
-        message += f"<{MESSAGE_TAG}> {custom_message} </{MESSAGE_TAG}>"
+        print(self.conversation[-1]["content"])  # Print the last message from the conversation
+        if "PROPOSAL" in self.conversation[-1]["content"]:
+            choice = input("Do you want to accept the proposal? (yes/no): ")
+            if choice.lower() == "yes":
+                custom_message = input("What message do you want to send to the assistant? ")
+                message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"
+                message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
+                message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
+                message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"
+                message += f"<{PLAYER_ANSWER_TAG}> ACCEPT </{PLAYER_ANSWER_TAG}>\n"
+                message += f"<{PROPOSED_TRADE_TAG}> NONE </{PROPOSED_TRADE_TAG}>\n"
+                message += f"<{MESSAGE_TAG}> {custom_message} </{MESSAGE_TAG}>"
+            else:
+                to_receive = input("What do you want to reveive from the assistant? ")
+                to_pay = input("What do you want to pay to the assistant? ")
+                custom_message = input("What message do you want to send to the assistant? ")
+                message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"
+                message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
+                message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
+                message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"
+                message += f"<{PLAYER_ANSWER_TAG}> PROPOSAL </{PLAYER_ANSWER_TAG}>\n"
+                message += f"<{PROPOSED_TRADE_TAG}> {AGENT_ONE} Gives X: {to_receive} | {AGENT_TWO} Gives {MONEY_TOKEN}: {to_pay} </{PROPOSED_TRADE_TAG}>\n"
+                message += f"<{MESSAGE_TAG}> {custom_message} </{MESSAGE_TAG}>"
+
         return message
 
     def update_conversation_tracking(self, role, message):
