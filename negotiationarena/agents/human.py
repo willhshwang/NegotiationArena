@@ -1,0 +1,83 @@
+import os
+from negotiationarena.agents.agents import Agent
+from negotiationarena.constants import AGENT_TWO, AGENT_ONE
+from negotiationarena.agents.agent_behaviours import SelfCheckingAgent
+from copy import deepcopy
+from negotiationarena.constants import *
+
+
+class HumanAgent(Agent):
+    def __init__(
+        self,
+        agent_name: str,
+        *args,
+        **kwargs # added args and kwargs for debugging
+    ):
+        super().__init__(agent_name)
+        self.conversation = []
+
+    def init_agent(self, system_prompt, role):
+        if AGENT_ONE in self.agent_name:
+            # we use the user role to tell the assistant that it has to start.
+
+            self.update_conversation_tracking(
+                self.prompt_entity_initializer, system_prompt
+            )
+            self.update_conversation_tracking("user", role)
+        elif AGENT_TWO in self.agent_name:
+            system_prompt = system_prompt + role
+            self.update_conversation_tracking(
+                self.prompt_entity_initializer, system_prompt
+            )
+        else:
+            raise "No Player 1 or Player 2 in role"
+
+    def __deepcopy__(self, memo):
+        """
+        Deepcopy is needed because we cannot pickle the llama object.
+        :param memo:
+        :return:
+        """
+        cls = self.__class__
+        result = cls.__new__(cls)
+        memo[id(self)] = result
+        for k, v in self.__dict__.items():
+            if k == "client" and not isinstance(v, str):
+                v = v.__class__.__name__
+            setattr(result, k, deepcopy(v, memo))
+        return result
+
+    def chat(self):
+        print(self.conversation[-1]["content"])  # Print the last message from the conversation
+        if "PROPOSAL" in self.conversation[-1]["content"]:
+            choice = input("Do you want to accept the proposal? (yes/no): ")
+            if choice.lower() == "yes":
+                custom_message = input("What message do you want to send to the assistant? ")
+                message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"
+                message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
+                message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
+                message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"
+                message += f"<{PLAYER_ANSWER_TAG}> ACCEPT </{PLAYER_ANSWER_TAG}>\n"
+                message += f"<{PROPOSED_TRADE_TAG}> NONE </{PROPOSED_TRADE_TAG}>\n"
+                message += f"<{MESSAGE_TAG}> {custom_message} </{MESSAGE_TAG}>"
+            else:
+                to_receive = input("What do you want to reveive from the assistant? ")
+                to_pay = input("What do you want to pay to the assistant? ")
+                custom_message = input("What message do you want to send to the assistant? ")
+                message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"
+                message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
+                message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
+                message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"
+                message += f"<{PLAYER_ANSWER_TAG}> PROPOSAL </{PLAYER_ANSWER_TAG}>\n"
+                message += f"<{PROPOSED_TRADE_TAG}> {AGENT_ONE} Gives X: {to_receive} | {AGENT_TWO} Gives {MONEY_TOKEN}: {to_pay} </{PROPOSED_TRADE_TAG}>\n"
+                message += f"<{MESSAGE_TAG}> {custom_message} </{MESSAGE_TAG}>"
+
+        return message
+
+    def update_conversation_tracking(self, role, message):
+        self.conversation.append({"role": role, "content": message})
+
+
+class SelfCheckingHumanAgent(HumanAgent, SelfCheckingAgent):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
