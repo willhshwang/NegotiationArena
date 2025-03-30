@@ -1,10 +1,13 @@
+import copy
 import os
+
+import os
+import random
 from negotiationarena.agents.agents import Agent
-from negotiationarena.constants import AGENT_TWO, AGENT_ONE
+import time
+from negotiationarena.constants import *
 from negotiationarena.agents.agent_behaviours import SelfCheckingAgent
 from copy import deepcopy
-from negotiationarena.constants import *
-
 
 class HumanAgent(Agent):
     def __init__(
@@ -15,6 +18,7 @@ class HumanAgent(Agent):
     ):
         super().__init__(agent_name)
         self.conversation = []
+        self.proposal_count = 0
 
     def init_agent(self, system_prompt, role):
         if AGENT_ONE in self.agent_name:
@@ -48,16 +52,18 @@ class HumanAgent(Agent):
         return result
 
     def chat(self):
-        print(self.conversation[-1]["content"], flush = True)  # Print the last message from the conversation for reference
-        if "PROPOSAL" in self.conversation[-1]["content"]:
+        self.proposal_count += 1  # keep track of the number of proposals (incremented even when ACCEPT is chosen)
+        message = ""
+        if "PROPOSAL" in self.conversation[-1]["content"]: # there is counter offer by LLM
+            print(self.conversation[-1]["content"], flush = True)  # Print the last message from the conversation for reference. Later: Extract the message section only.
             choice = ""
             while choice.lower() not in ['yes', 'no']:
                 choice = input("Do you want to accept the proposal? (yes/no): ")
-                if choice.lower() == "yes":
-                    message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"                    # nonessential tag
+                if choice.lower() == "yes": # send ACCEPT message, only from buyer perspective for now. 
+                    message += f"<{PROPOSAL_COUNT_TAG}> {self.proposal_count} </{PROPOSAL_COUNT_TAG}>\n"    # nonessential tag
                     message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"                      # nonessential tag
                     message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"  # nonessential tag
-                    message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"                              # nonessential tag         
+                    message += f"<{REASONING_TAG}> NONE </{REASONING_TAG}>\n"                          # nonessential tag         
                     message += f"<{PLAYER_ANSWER_TAG}> ACCEPT </{PLAYER_ANSWER_TAG}>\n"               
                     message += f"<{PROPOSED_TRADE_TAG}> NONE </{PROPOSED_TRADE_TAG}>\n"              
                     message += f"<{MESSAGE_TAG}> NONE </{MESSAGE_TAG}>"                                # nonessential tag
@@ -67,7 +73,7 @@ class HumanAgent(Agent):
                         counter_offer_price = input(f"Propose a counter offer. Respond with an integer.\n")  # make sure the input is an integer
                     counter_offer_message = input(f"Create a message to send to the other player. Remember, you proposed {counter_offer_price} ZUP for 1 X.\n")  # later we need to make sure counter_offer_price is equal to the price stated in the message
                     
-                    message = f"<{PROPOSAL_COUNT_TAG}> 1 </{PROPOSAL_COUNT_TAG}>\n"                    # nonessential tag
+                    message += f"<{PROPOSAL_COUNT_TAG}> {self.proposal_count} </{PROPOSAL_COUNT_TAG}>\n"       # nonessential tag
                     message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"                      # nonessential tag
                     message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"  # nonessential tag
                     message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"                              # nonessential tag         

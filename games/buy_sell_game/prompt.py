@@ -7,6 +7,7 @@ def buy_sell_prompt(
     player_goal,
     maximum_number_of_proposals,
     player_social_behaviour,
+    player_trade_environment,
 ):
     prompt = f"""You are playing game where you are buying or selling an object. There is only one object for sale/purcahse.
 
@@ -69,6 +70,9 @@ All the responses you send should contain the following and in this order:
 Please be sure to include all.
 
 {player_social_behaviour}
+
+{player_trade_environment}
+
 """
 
     return prompt

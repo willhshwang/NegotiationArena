@@ -28,6 +28,7 @@ class BuySellGameDefaultParser(ExchangeGameDefaultParser):
         player_goal,
         maximum_number_of_proposals,
         player_social_behaviour,
+        player_trade_environment,
     ):
         return buy_sell_prompt(
             resources_available_in_game,
@@ -35,6 +36,7 @@ class BuySellGameDefaultParser(ExchangeGameDefaultParser):
             player_goal,
             maximum_number_of_proposals,
             player_social_behaviour,
+            player_trade_environment,
         )
 
     def parse(self, response):
@@ -96,6 +98,7 @@ class BuySellGame(AlternatingGameEndsOnTag):
         player_starting_resources,
         player_social_behaviour,
         player_conversation_roles,
+        player_trade_environment,
         game_interface=None,
         **kwargs
     ):
@@ -125,6 +128,7 @@ class BuySellGame(AlternatingGameEndsOnTag):
                     player_initial_resources=player_starting_resources,
                     player_social_behaviour=player_social_behaviour,
                     player_roles=player_conversation_roles,
+                    player_trade_environment=player_trade_environment,
                     player_valuation=[g.get_valuation() for g in player_goals],
                 ),
             }
@@ -136,7 +140,8 @@ class BuySellGame(AlternatingGameEndsOnTag):
         self.player_starting_resources = player_starting_resources
         self.player_social_behaviour = player_social_behaviour
         self.player_conversation_roles = player_conversation_roles
-
+        self.player_trade_environment = player_trade_environment
+        
         self.game_interface = (
             BuySellGameDefaultParser()
             if game_interface is None
@@ -159,6 +164,9 @@ class BuySellGame(AlternatingGameEndsOnTag):
                 player_goal=settings["player_goals"][idx],
                 maximum_number_of_proposals=self.iterations // 2 - 1,
                 player_social_behaviour=settings["player_social_behaviour"][
+                    idx
+                ],
+                player_trade_environment=settings["player_trade_environment"][
                     idx
                 ],
             )
