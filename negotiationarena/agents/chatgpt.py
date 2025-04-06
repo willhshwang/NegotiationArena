@@ -68,6 +68,8 @@ class ChatGPTAgent(Agent):
         return result
 
     def chat(self):
+        steering_message = input("Enter your steering message: ")
+        self.update_conversation_tracking("developer", steering_message)
         chat = self.client.chat.completions.create(
             model=self.model,
             messages=self.conversation,
