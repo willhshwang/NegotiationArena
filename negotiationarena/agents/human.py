@@ -2,6 +2,7 @@ import copy
 import os
 
 import os
+import streamlit as st
 import random
 from negotiationarena.agents.agents import Agent
 import time
@@ -52,36 +53,59 @@ class HumanAgent(Agent):
         return result
 
     def chat(self):
-        self.proposal_count += 1  # keep track of the number of proposals (incremented even when ACCEPT is chosen)
+        self.proposal_count += 1
+
+        # Create persistent keys if not already set
+        if "human_decision" not in st.session_state:
+            st.session_state.human_decision = None
+        if "counter_offer_price" not in st.session_state:
+            st.session_state.counter_offer_price = ""
+        if "counter_offer_message" not in st.session_state:
+            st.session_state.counter_offer_message = ""
+        if "submitted" not in st.session_state:
+            st.session_state.submitted = False
+
+        st.write("### You received the following proposal:")
+        st.markdown(self.conversation[-1]["content"])
+
+        # Wait loop until user responds
+        while not st.session_state.submitted:
+            st.warning("Waiting for user input...")
+            st.stop()  # Pauses Streamlit execution — resumes on rerun
+
+        decision = st.session_state.human_decision
+        counter_offer_price = st.session_state.counter_offer_price
+        counter_offer_message = st.session_state.counter_offer_message
+
+        # Reset submission flag after response is used
+        st.session_state.submitted = False
+        st.session_state.human_decision = None
+        st.session_state.counter_offer_price = ""
+        st.session_state.counter_offer_message = ""
+
         message = ""
-        if "PROPOSAL" in self.conversation[-1]["content"]: # there is counter offer by LLM
-            print(self.conversation[-1]["content"], flush = True)  # Print the last message from the conversation for reference. Later: Extract the message section only.
-            choice = ""
-            while choice.lower() not in ['yes', 'no']:
-                choice = input("Do you want to accept the proposal? (yes/no): ")
-                if choice.lower() == "yes": # send ACCEPT message, only from buyer perspective for now. 
-                    message += f"<{PROPOSAL_COUNT_TAG}> {self.proposal_count} </{PROPOSAL_COUNT_TAG}>\n"    # nonessential tag
-                    message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"                      # nonessential tag
-                    message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"  # nonessential tag
-                    message += f"<{REASONING_TAG}> NONE </{REASONING_TAG}>\n"                          # nonessential tag         
-                    message += f"<{PLAYER_ANSWER_TAG}> ACCEPT </{PLAYER_ANSWER_TAG}>\n"               
-                    message += f"<{PROPOSED_TRADE_TAG}> NONE </{PROPOSED_TRADE_TAG}>\n"              
-                    message += f"<{MESSAGE_TAG}> NONE </{MESSAGE_TAG}>"                                # nonessential tag
-                else:
-                    counter_offer_price = ""
-                    while not counter_offer_price.isdigit():
-                        counter_offer_price = input(f"Propose a counter offer. Respond with an integer.\n")  # make sure the input is an integer
-                    counter_offer_message = input(f"Create a message to send to the other player. Remember, you proposed {counter_offer_price} ZUP for 1 X.\n")  # later we need to make sure counter_offer_price is equal to the price stated in the message
-                    
-                    message += f"<{PROPOSAL_COUNT_TAG}> {self.proposal_count} </{PROPOSAL_COUNT_TAG}>\n"       # nonessential tag
-                    message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"                      # nonessential tag
-                    message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"  # nonessential tag
-                    message += f"<{REASONING_TAG}>  </{REASONING_TAG}>\n"                              # nonessential tag         
-                    message += f"<{PLAYER_ANSWER_TAG}> PROPOSAL </{PLAYER_ANSWER_TAG}>\n"
-                    message += f"<{PROPOSED_TRADE_TAG}> {AGENT_ONE} Gives X: 1 | {AGENT_TWO} Gives ZUP: {counter_offer_price} </{PROPOSED_TRADE_TAG}>\n" # Only in one item trade setting and currency is ZUP
-                    message += f"<{MESSAGE_TAG}> {counter_offer_message} </{MESSAGE_TAG}>"
-                    
+        if "PROPOSAL" in self.conversation[-1]["content"]:
+            if decision.lower() == "yes":
+                message += f"<{PROPOSAL_COUNT_TAG}> {self.proposal_count} </{PROPOSAL_COUNT_TAG}>\n"
+                message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
+                message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
+                message += f"<{REASONING_TAG}> NONE </{REASONING_TAG}>\n"
+                message += f"<{PLAYER_ANSWER_TAG}> ACCEPT </{PLAYER_ANSWER_TAG}>\n"
+                message += f"<{PROPOSED_TRADE_TAG}> NONE </{PROPOSED_TRADE_TAG}>\n"
+                message += f"<{MESSAGE_TAG}> NONE </{MESSAGE_TAG}>"
+            else:
+                if not counter_offer_price.isdigit():
+                    raise ValueError("Counter offer price must be a number")
+                message += f"<{PROPOSAL_COUNT_TAG}> {self.proposal_count} </{PROPOSAL_COUNT_TAG}>\n"
+                message += f"<{RESOURCES_TAG}> ZUP: 100 </{RESOURCES_TAG}>\n"
+                message += f"<{GOALS_TAG}> Buy X for the minimum amount of ZUP. </{GOALS_TAG}>\n"
+                message += f"<{REASONING_TAG}> </{REASONING_TAG}>\n"
+                message += f"<{PLAYER_ANSWER_TAG}> PROPOSAL </{PLAYER_ANSWER_TAG}>\n"
+                message += f"<{PROPOSED_TRADE_TAG}> {AGENT_ONE} Gives X: 1 | {AGENT_TWO} Gives ZUP: {counter_offer_price} </{PROPOSED_TRADE_TAG}>\n"
+                message += f"<{MESSAGE_TAG}> {counter_offer_message} </{MESSAGE_TAG}>"
+
         return message
+
 
     def update_conversation_tracking(self, role, message):
         self.conversation.append({"role": role, "content": message})

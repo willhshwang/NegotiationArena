@@ -215,6 +215,46 @@ class AlternatingGame(Game):
             self.get_next_player()
             print("=============\n")
 
+    def initialize_first_state(self):
+        if len(self.game_state) == 0:
+            # simulate what happens at the start of full `run()`
+            player = self.players[self.turn]
+            response = player.step({})
+            self.write_game_state(self.players, response)
+
+    def run_one_turn(self):
+        """
+
+        Execute the ratbench / Main ratbench engine
+
+        """
+        if len(self.game_state) == 0:
+            self.initialize_first_state()  # fallback
+
+        self.current_iteration += 1
+        print(self.current_iteration)
+        message = self.read_iteration_message(self.current_iteration - 2)
+
+        response = self.players[self.turn].step(message)
+        self.write_game_state(self.players, response)
+
+        self.view_state(ignore=[
+            "player_public_answer_string",
+            "player_public_info_dict",
+            "player_private_info_dict",
+            "player_state",
+        ])
+
+        self.log_state()
+
+        if self.game_over():
+            self.after_game_ends()
+            self.log_state()
+            return
+
+        self.get_next_player()
+        print("=============\n")
+
     def log_human_readable_state(self):
         """
         easy to inspect log file
