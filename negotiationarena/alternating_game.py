@@ -10,6 +10,8 @@ from negotiationarena.game_objects.game import Game
 from negotiationarena.agents.agents import Agent
 from negotiationarena.utils import get_next_filename
 from negotiationarena.constants import PLAYER_ANSWER_TAG
+import streamlit as st
+import re
 
 
 class AlternatingGame(Game):
@@ -232,8 +234,8 @@ class AlternatingGame(Game):
             self.initialize_first_state()  # fallback
 
         self.current_iteration += 1
-        print(self.current_iteration)
-        message = self.read_iteration_message(self.current_iteration - 2)
+        print(self.current_iteration - 1)
+        message = self.read_iteration_message(-1)
 
         response = self.players[self.turn].step(message)
         self.write_game_state(self.players, response)
@@ -350,6 +352,23 @@ class AlternatingGameEndsOnTag(AlternatingGame):
             # TODO: this is pretty buggy
             iteration = state.get("current_iteration", 0)
             if response == self.end_tag or iteration == self.iterations:
+                if response == self.end_tag:
+                    print("Agreement reached!")
+                    # Extract the most recent price from player's proposal
+                    proposal_price = state['player_public_info_dict'].get('price')
+                    if not proposal_price:
+                        # If not in current state, look for it in the message content
+                        response_content = state['player_complete_answer']
+                        if 'price:' in response_content.lower():
+                            # Try to extract price from response text
+                            price_match = re.search(r'price:\s*(\d+(?:\.\d+)?)', response_content.lower())
+                            if price_match:
+                                proposal_price = price_match.group(1)
+                    
+                    st.success(f"Congratulations! The parties have reached an agreement at the final price: {proposal_price or 'Unspecified'}")
+                    st.balloons()
+                else:
+                    print("Game reached max iterations")
                 return True
 
         return False

@@ -62,7 +62,7 @@ def main():
                     f"You are {AGENT_TWO}.",
                 ],
                 player_social_behaviour=[
-                    "You are a stubborn, unyielding seller that has been successful by playing this part.",
+                    "You are a stubborn, unyielding seller that has been successful by playing this part. You should always be careful about rejecting, however, as you will end the game and walk away with nothing.",
                     ""
                 ],
                 player_trade_environment=[
@@ -76,6 +76,7 @@ def main():
             st.session_state.game.initialize_first_state()
             st.session_state.started = True
             st.success("Game initialized. Ready to play!")
+            st.session_state.game.run_one_turn()
 
         except Exception as e:
             st.error(f"Exception: {e}")
@@ -84,6 +85,7 @@ def main():
     # ========== RUN ONE TURN ON BUTTON PRESS ==========
     if st.session_state.started and st.button("Run Next Turn"):
         try:
+            st.session_state.game.run_one_turn()
             st.session_state.game.run_one_turn()
         except Exception as e:
             st.error(f"Turn failed: {e}")
