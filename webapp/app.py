@@ -39,6 +39,8 @@ def main():
         st.session_state.started = False
     if "game" not in st.session_state:
         st.session_state.game = None
+    if "game_over" not in st.session_state:
+        st.session_state.game_over = False
 
     # ========== START GAME ONLY ONCE ==========
     if not st.session_state.started:
@@ -85,8 +87,10 @@ def main():
     # ========== RUN ONE TURN ON BUTTON PRESS ==========
     if st.session_state.started and st.button("Run Next Turn"):
         try:
-            st.session_state.game.run_one_turn()
-            st.session_state.game.run_one_turn()
+            if not st.session_state.game_over:
+                st.session_state.game.run_one_turn()
+            if not st.session_state.game_over:
+                st.session_state.game.run_one_turn()
         except Exception as e:
             st.error(f"Turn failed: {e}")
             st.text(traceback.format_exc())

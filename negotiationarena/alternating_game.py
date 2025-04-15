@@ -355,17 +355,12 @@ class AlternatingGameEndsOnTag(AlternatingGame):
                 if response == self.end_tag:
                     print("Agreement reached!")
                     # Extract the most recent price from player's proposal
-                    proposal_price = state['player_public_info_dict'].get('price')
-                    if not proposal_price:
-                        # If not in current state, look for it in the message content
-                        response_content = state['player_complete_answer']
-                        if 'price:' in response_content.lower():
-                            # Try to extract price from response text
-                            price_match = re.search(r'price:\s*(\d+(?:\.\d+)?)', response_content.lower())
-                            if price_match:
-                                proposal_price = price_match.group(1)
+                    self.after_game_ends()
+                    final_state = self.game_state[-1]["summary"]
+                    player_payoff = final_state.get("player_outcome")[1]
+                    st.session_state.game_over = True
                     
-                    st.success(f"Congratulations! The parties have reached an agreement at the final price: {proposal_price or 'Unspecified'}")
+                    st.success(f"Congratulations! The parties have reached an agreement with the payoffs: {player_payoff or 'Unspecified'}")
                     st.balloons()
                 else:
                     print("Game reached max iterations")
