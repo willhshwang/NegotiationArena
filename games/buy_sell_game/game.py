@@ -15,6 +15,8 @@ from negotiationarena.utils import extract_multiple_tags
 from games.buy_sell_game.prompt import buy_sell_prompt
 from negotiationarena.parser import ExchangeGameDefaultParser
 from negotiationarena.agent_message import AgentMessage
+import os
+import csv
 
 
 class BuySellGameDefaultParser(ExchangeGameDefaultParser):
@@ -237,5 +239,25 @@ class BuySellGame(AlternatingGameEndsOnTag):
                     player_outcome=outcome,
                 ),
             )
+
+            behaviour = self.game_state[0]["settings"].get("player_social_behaviour", None)
+            if behaviour:
+                llm_behavior = behaviour[0]
+            
+            # Append behavior and outcomes to a CSV file
+
+            # Create the CSV file if it doesn't exist
+            csv_path = 'webapp/buy_sell_game_results.csv'
+
+            file_exists = os.path.isfile(csv_path)
+
+            with open(csv_path, 'a', newline='') as f:
+                writer = csv.writer(f)
+                # Write header if the file is new
+                if not file_exists:
+                    writer.writerow(['Behavior', 'LLM Payoff', 'User Payoff'])
+                
+                # Write the data row
+                writer.writerow([llm_behavior, outcome[0], outcome[1]])
 
             self.game_state.append(datum)

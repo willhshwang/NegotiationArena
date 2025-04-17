@@ -94,11 +94,11 @@ def main():
                     f"You are {AGENT_TWO}.",
                 ],
                 player_social_behaviour=[
-                    "You are a stubborn, unyielding seller that has been successful by playing this part. You should always be careful about rejecting, however, as you will end the game and walk away with nothing.",
+                    "",
                     ""
                 ],
                 player_trade_environment=[
-                    "You have ten customers lining up to buy your product.",
+                    "You have ten customers lining up to buy your product. If you reject you will walk away with a payoff of 0, otherwise you will walk away with a payoff of sell price minus cost of production.",
                     ""
                 ],
                 log_dir="../example_logs/buysell/test_human",
