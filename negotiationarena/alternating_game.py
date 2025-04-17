@@ -361,7 +361,7 @@ class AlternatingGameEndsOnTag(AlternatingGame):
                     player_payoff = final_state.get("player_outcome")[1]
                     st.session_state.game_over = True
                     
-                    st.success(f"Congratulations! The parties have reached an agreement with the payoffs: {player_payoff or 'Unspecified'}")
+                    st.success(f"Congratulations! The parties have reached an agreement and your payoff is: {player_payoff or 'Unspecified'}")
                     st.balloons()
                 else:
                     print("Game reached max iterations")
