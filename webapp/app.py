@@ -35,6 +35,14 @@ def main():
                 st.session_state.counter_offer_price = price
                 st.session_state.counter_offer_message = message
                 st.session_state.submitted = True
+                try:
+                    if not st.session_state.game_over:
+                        st.session_state.game_over = st.session_state.game.run_one_turn()
+                    if not st.session_state.game_over:
+                        st.session_state.game_over = st.session_state.game.run_one_turn()
+                except Exception as e:
+                    st.error(f"Turn failed: {e}")
+                    st.text(traceback.format_exc())
 
     # ========== INITIALIZE SESSION STATE ==========
     if "started" not in st.session_state:
@@ -84,17 +92,6 @@ def main():
 
         except Exception as e:
             st.error(f"Exception: {e}")
-            st.text(traceback.format_exc())
-
-    # ========== RUN ONE TURN ON BUTTON PRESS ==========
-    if st.session_state.started and st.button("Run Next Turn"):
-        try:
-            if not st.session_state.game_over:
-                st.session_state.game_over = st.session_state.game.run_one_turn()
-            if not st.session_state.game_over:
-                st.session_state.game_over = st.session_state.game.run_one_turn()
-        except Exception as e:
-            st.error(f"Turn failed: {e}")
             st.text(traceback.format_exc())
 
     # ========== DISPLAY LAST GAME STATE ==========
