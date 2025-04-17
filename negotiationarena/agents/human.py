@@ -65,9 +65,6 @@ class HumanAgent(Agent):
         if "submitted" not in st.session_state:
             st.session_state.submitted = False
 
-        st.write("### You received the following proposal:")
-        st.markdown(self.conversation[-1]["content"])
-
         # Wait loop until user responds
         while not st.session_state.submitted:
             st.warning("Waiting for user input...")

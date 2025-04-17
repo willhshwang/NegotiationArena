@@ -88,9 +88,9 @@ def main():
     if st.session_state.started and st.button("Run Next Turn"):
         try:
             if not st.session_state.game_over:
-                st.session_state.game.run_one_turn()
+                st.session_state.game_over = st.session_state.game.run_one_turn()
             if not st.session_state.game_over:
-                st.session_state.game.run_one_turn()
+                st.session_state.game_over = st.session_state.game.run_one_turn()
         except Exception as e:
             st.error(f"Turn failed: {e}")
             st.text(traceback.format_exc())
@@ -101,10 +101,11 @@ def main():
         if st.session_state.game.game_state:
             last_state = st.session_state.game.game_state[-1]
             for k, v in last_state.items():
-                st.markdown(f"**{k}**: `{v}`" if not isinstance(v, dict) else f"**{k}**:")
-                if isinstance(v, dict):
-                    for sub_k, sub_v in v.items():
-                        st.markdown(f"- `{sub_k}`: `{sub_v}`")
+                if k == "player_public_info_dict":
+                    st.markdown(f"**The seller responded:**")
+                    if isinstance(v, dict):
+                        for sub_k, sub_v in v.items():
+                            st.markdown(f"- **{sub_k}**: `{sub_v}`")
 
 if __name__ == "__main__":
     main()

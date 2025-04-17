@@ -252,10 +252,11 @@ class AlternatingGame(Game):
         if self.game_over():
             self.after_game_ends()
             self.log_state()
-            return
+            return True
 
         self.get_next_player()
         print("=============\n")
+        return False
 
     def log_human_readable_state(self):
         """
@@ -364,6 +365,11 @@ class AlternatingGameEndsOnTag(AlternatingGame):
                     st.balloons()
                 else:
                     print("Game reached max iterations")
+                return True
+            if response == "REJECT":
+                print("Game ended with rejection")
+                st.session_state.game_over = True
+                st.error("Game ended with rejection. Your payoff is 0.")
                 return True
 
         return False
