@@ -35,13 +35,18 @@ def main():
             if submitted:
                 st.session_state.human_decision = decision
                 st.session_state.counter_offer_price = price
-                st.session_state.counter_offer_message = message
+                if decision == "yes":
+                    message = "I accept your proposal."
+                else:
+                    st.session_state.counter_offer_message = message
                 if "messages" not in st.session_state:
                     st.session_state.messages = []
-                st.session_state.messages.append({
-                    "role": "user",
-                    "content": message,
-                })
+                
+                if message != "":
+                    st.session_state.messages.append({
+                        "role": "user",
+                        "content": message,
+                    })
                 st.session_state.submitted = True
                 try:
                     if not st.session_state.game_over:
