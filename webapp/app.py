@@ -19,9 +19,45 @@ from negotiationarena.game_objects.valuation import Valuation
 from negotiationarena.constants import AGENT_ONE, AGENT_TWO, MONEY_TOKEN
 import traceback
 from games.buy_sell_game.game import BuySellGame
+import json
+import os
+import random
 
 def main():
     st.title("Negotiation Arena")
+
+    if "personas" not in st.session_state or "classifications" not in st.session_state:
+        # Define paths to the JSON files (adjust paths as needed)
+        json_files = ["personas/outputs/neutral_personas.json", 
+                    "personas/outputs/sycophant_personas.json", 
+                    "personas/outputs/nonsycophant_personas.json"
+        ]
+        combined_data = {}
+        classifications = {}
+
+        current = ["neutral", "sycophant", "nonsycophant"]
+        i = 0
+        for file_path in json_files:
+            try:
+                if os.path.exists(file_path):
+                    with open(file_path, 'r') as file:
+                        data = json.load(file)
+                        # Merge data into combined_data dictionary
+                        combined_data.update(data)
+
+                        for key, value in data.items():
+                            classifications[key] = current[i]
+            except Exception as e:
+                st.error(f"Error reading {file_path}: {e}")
+
+            i += 1
+        
+        st.session_state.personas = combined_data
+        st.session_state.classifications = classifications
+
+    
+    print(f"Loaded personas: {st.session_state.personas}")
+
     col1, col2 = st.columns(2)
 
     # ========== USER INPUT FORM ==========
@@ -78,6 +114,15 @@ def main():
             a1 = ChatGPTAgent(agent_name=AGENT_ONE, model="gpt-4o-mini")
             a2 = HumanAgent(agent_name=AGENT_TWO)
 
+            # Pick a random persona from the available personas
+            if st.session_state.personas:
+                random_persona_key = random.choice(list(st.session_state.personas.keys()))
+                random_persona = st.session_state.personas[random_persona_key]
+                # st.sidebar.write(f"Selected Persona: {random_persona_key}")
+            else:
+                random_persona = ""
+                st.sidebar.write("No personas available")
+            
             game = BuySellGame(
                 players=[a1, a2],
                 iterations=10,
@@ -94,7 +139,7 @@ def main():
                     f"You are {AGENT_TWO}.",
                 ],
                 player_social_behaviour=[
-                    "",
+                    random_persona,
                     ""
                 ],
                 player_trade_environment=[

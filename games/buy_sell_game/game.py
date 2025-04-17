@@ -17,6 +17,7 @@ from negotiationarena.parser import ExchangeGameDefaultParser
 from negotiationarena.agent_message import AgentMessage
 import os
 import csv
+import streamlit as st
 
 
 class BuySellGameDefaultParser(ExchangeGameDefaultParser):
@@ -251,13 +252,32 @@ class BuySellGame(AlternatingGameEndsOnTag):
 
             file_exists = os.path.isfile(csv_path)
 
+            if "personas" not in st.session_state:
+                st.session_state.personas = {}
+            
+            # Flip the dictionary in st.session_state.personas if it exists
+            if st.session_state.personas:
+                flipped_personas = {v: k for k, v in st.session_state.personas.items()}
+                st.session_state.personas = flipped_personas
+
+            # Get the readable persona name from the behavior if it exists in the flipped personas
+            persona_name = flipped_personas.get(llm_behavior, llm_behavior)
+
+            # You can update the LLM behavior to the readable name
+            llm_behavior = persona_name
+
+            if "classifications" in st.session_state:
+                classification = st.session_state.classifications.get(llm_behavior, "Unknown")
+            else:
+                print("No classification found in session state.")
+
             with open(csv_path, 'a', newline='') as f:
                 writer = csv.writer(f)
                 # Write header if the file is new
                 if not file_exists:
-                    writer.writerow(['Behavior', 'LLM Payoff', 'User Payoff'])
+                    writer.writerow(['Behavior', 'Sub-behavior', 'LLM Payoff', 'User Payoff'])
                 
                 # Write the data row
-                writer.writerow([llm_behavior, outcome[0], outcome[1]])
+                writer.writerow([llm_behavior, classification, outcome[0], outcome[1]])
 
             self.game_state.append(datum)
