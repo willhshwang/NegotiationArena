@@ -34,6 +34,12 @@ def main():
                 st.session_state.human_decision = decision
                 st.session_state.counter_offer_price = price
                 st.session_state.counter_offer_message = message
+                if "messages" not in st.session_state:
+                    st.session_state.messages = []
+                st.session_state.messages.append({
+                    "role": "user",
+                    "content": message,
+                })
                 st.session_state.submitted = True
                 try:
                     if not st.session_state.game_over:
@@ -109,14 +115,21 @@ def main():
                         for sub_k, sub_v in v.items():
                             st.markdown(f"- **{sub_k}**: `{sub_v}`")
                             if sub_k == "message" and sub_v not in st.session_state.messages:
-                                st.session_state.messages.append(sub_v)
+                                st.session_state.messages.append({
+                                    "role": "assistant",
+                                    "content": sub_v,
+                                })
         
     with col1:
-        if st.session_state.messages:
-            for message in st.session_state.messages:
-                st.chat_message("assistant").write(message)
-        else:
-            st.markdown("No messages yet.")
+        # Create a scrollable container for chat messages
+        chat_container = st.container(height=400)
+        
+        with chat_container:
+            if st.session_state.messages:
+                for message in st.session_state.messages:
+                    st.chat_message(message.get("role")).write(message.get("content"))
+            else:
+                st.markdown("No messages yet.")
 
 if __name__ == "__main__":
     main()
