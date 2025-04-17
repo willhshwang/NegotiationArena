@@ -20,19 +20,21 @@ from games.buy_sell_game.game import BuySellGame
 
 def main():
     st.title("Negotiation Arena")
+    col1, col2 = st.columns(2)
 
     # ========== USER INPUT FORM ==========
-    with st.form(key="user_input"):
-        decision = st.radio("Do you want to accept the proposal?", ["yes", "no"])
-        price = st.text_input("Counter offer price (only if proposing):")
-        message = st.text_area("Message to other player (only if proposing):")
+    with col2:
+        with st.form(key="user_input"):
+            decision = st.radio("Do you want to accept the proposal?", ["yes", "no"])
+            price = st.text_input("Counter offer price (only if proposing):")
+            message = st.text_area("Message to other player (only if proposing):")
 
-        submitted = st.form_submit_button("Submit Response")
-        if submitted:
-            st.session_state.human_decision = decision
-            st.session_state.counter_offer_price = price
-            st.session_state.counter_offer_message = message
-            st.session_state.submitted = True
+            submitted = st.form_submit_button("Submit Response")
+            if submitted:
+                st.session_state.human_decision = decision
+                st.session_state.counter_offer_price = price
+                st.session_state.counter_offer_message = message
+                st.session_state.submitted = True
 
     # ========== INITIALIZE SESSION STATE ==========
     if "started" not in st.session_state:
@@ -96,6 +98,9 @@ def main():
             st.text(traceback.format_exc())
 
     # ========== DISPLAY LAST GAME STATE ==========
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+    
     if st.session_state.game:
         st.markdown("## Last Turn Summary")
         if st.session_state.game.game_state:
@@ -106,6 +111,15 @@ def main():
                     if isinstance(v, dict):
                         for sub_k, sub_v in v.items():
                             st.markdown(f"- **{sub_k}**: `{sub_v}`")
+                            if sub_k == "message" and sub_v not in st.session_state.messages:
+                                st.session_state.messages.append(sub_v)
+        
+    with col1:
+        if st.session_state.messages:
+            for message in st.session_state.messages:
+                st.chat_message("assistant").write(message)
+        else:
+            st.markdown("No messages yet.")
 
 if __name__ == "__main__":
     main()
