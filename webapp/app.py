@@ -46,18 +46,8 @@ def main():
                 try:
                     if not st.session_state.game_over:
                         st.session_state.game_over = st.session_state.game.run_one_turn()
-                    else:
-                        # Reset all session state variables
-                        for key in list(st.session_state.keys()):
-                            del st.session_state[key]
-                        st.rerun()  # Restart the app with clean state
                     if not st.session_state.game_over:
                         st.session_state.game_over = st.session_state.game.run_one_turn()
-                    else:
-                        # Reset all session state variables
-                        for key in list(st.session_state.keys()):
-                            del st.session_state[key]
-                        st.rerun()  # Restart the app with clean state
                 except Exception as e:
                     st.error(f"Turn failed: {e}")
                     st.text(traceback.format_exc())
@@ -69,6 +59,13 @@ def main():
         st.session_state.game = None
     if "game_over" not in st.session_state:
         st.session_state.game_over = False
+
+    if st.session_state.game_over:
+        # Button to reset the game
+        if st.button("Start New Negotiation"):
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.rerun()  # Restart the app with clean state
 
     # ========== START GAME ONLY ONCE ==========
     if not st.session_state.started:

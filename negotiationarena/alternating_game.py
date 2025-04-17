@@ -359,7 +359,6 @@ class AlternatingGameEndsOnTag(AlternatingGame):
                     self.after_game_ends()
                     final_state = self.game_state[-1]["summary"]
                     player_payoff = final_state.get("player_outcome")[1]
-                    st.session_state.game_over = True
                     print(self.game_state[-1])
                     
                     st.success(f"Congratulations! The parties have reached an agreement and your payoff is: {player_payoff or 'Unspecified'}")
@@ -369,7 +368,6 @@ class AlternatingGameEndsOnTag(AlternatingGame):
                 return True
             if response == "REJECT":
                 print("Game ended with rejection")
-                st.session_state.game_over = True
                 st.error("Game ended with rejection. Your payoff is 0.")
                 return True
 
