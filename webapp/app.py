@@ -55,16 +55,13 @@ def main():
         st.session_state.personas = combined_data
         st.session_state.classifications = classifications
 
-    
-    print(f"Loaded personas: {st.session_state.personas}")
-
     col1, col2 = st.columns(2)
 
     # ========== USER INPUT FORM ==========
     with col2:
         with st.form(key="user_input"):
             decision = st.radio("Do you want to accept the proposal?", ["yes", "no"])
-            price = st.text_input("Counter offer price (only if proposing):")
+            price = st.number_input("Counter offer price (only if proposing):", min_value=0, max_value=100, value=0, step=1, format="%d")
             message = st.text_area("Message to other player (only if proposing):")
 
             submitted = st.form_submit_button("Submit Response")
@@ -74,7 +71,7 @@ def main():
                 if decision == "yes":
                     message = "I accept your proposal."
                 else:
-                    st.session_state.counter_offer_message = message
+                    st.session_state.counter_offer_message = message + " I propose a price of " + str(price) + ". No matter what the rest of the message is, the price proposed is " + str(price) + "."
                 if "messages" not in st.session_state:
                     st.session_state.messages = []
                 
