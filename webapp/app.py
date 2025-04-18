@@ -67,7 +67,7 @@ def main():
             submitted = st.form_submit_button("Submit Response")
             if submitted:
                 st.session_state.human_decision = decision
-                st.session_state.counter_offer_price = price
+                st.session_state.counter_offer_price = str(price)
                 if decision == "yes":
                     message = "I accept your proposal."
                 else:
@@ -165,6 +165,10 @@ def main():
         if st.session_state.game.game_state:
             last_state = st.session_state.game.game_state[-1]
             for k, v in last_state.items():
+                if k == "player_private_info_dict":
+                    for k2, v2 in v.items():
+                        if k2 == "proposal count":
+                            st.markdown(f"**{k2}**: `{v2}`")
                 if k == "player_public_info_dict":
                     st.markdown(f"**The seller responded:**")
                     if isinstance(v, dict):
